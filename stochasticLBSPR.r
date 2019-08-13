@@ -1,5 +1,6 @@
 library(LBSPR)
 library(MASS)
+library(tmvtnorm)
 library(reshape)
 library(reshape2)
 library(ggplot2)
@@ -20,7 +21,7 @@ LBSPR_stochastic<-function(
   Nsamp=1000,
   LH_in=1, 
   LH.file=NA,
-  LH.plot = FALSE,
+  LH.plot = TRUE,
   RawBinWidth=2,
   Linf=NA,
   Linf_CV=0.1,
@@ -65,7 +66,7 @@ LBSPR_stochastic<-function(
     L50_Linf <- L50/Linf #Ratio between L50 and Linf. Want to keep this constant
     L95_Linf <- L95/Linf #Ratio between L95 and Linf. Want to keep this constant
     #Draw Nsamp values for Linf and k from mulitvariate random normal distribution
-    Linf_k_samps<-mvrnorm(Nsamp,c(Linf,k),Linf_k_sigma)
+    Linf_k_samps<-rtmvnorm(Nsamp,c(Linf,k),Linf_k_sigma,lower=rep(0,length(c(Linf,k))))
     #Plot the Linf and k values to make sure random draws are consistent with median values
     if(LH.plot == TRUE)
     {
@@ -109,7 +110,7 @@ LBSPR_stochastic<-function(
     L50_Linf <- L50/Linf #Ratio between L50 and Linf. Want to keep this constant
     L95_Linf <- L95/Linf #Ratio between L95 and Linf. Want to keep this constant
     #Draw Nsamp values for Linf and k from mulitvariate random normal distribution
-    Linf_M_k_samps<-mvrnorm(Nsamp,c(Linf,M_k),Linf_M_k_sigma)
+    Linf_M_k_samps<-rtmvnorm(Nsamp,mean=c(Linf,M_k),sigma=Linf_M_k_sigma,lower=rep(0,length(c(Linf,M_k))))
     if(LH.plot==TRUE)
     {
       #Plot the Linf and k values to make sure random draws are consistent with median values
