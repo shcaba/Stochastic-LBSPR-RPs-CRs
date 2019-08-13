@@ -34,6 +34,7 @@ LBSPR_stochastic<-function(
   L50=NA,
   L95=NA,
   SPR.flag=0.99,
+  Calc.RPs = TRUE,
   maxage=50,        #Maximum age for YPR analysis
   agestep=1,        #Age step for YPR
   maxF = 5,         #Max F to search for YPR
@@ -159,7 +160,9 @@ LBSPR_stochastic<-function(
     LBSPR.out_Sel95_vars[[i]]<-Spp.LBSPR.fit@Vars[,2]
     LBSPR.out_F_vars[[i]]<-Spp.LBSPR.fit@Vars[,3]
     
-    YPR.out<-YPR_SPR_RPs(maxage=maxage,agestep=agestep,
+    if(Calc.RPs == TRUE & !is.na(k))
+    {
+      YPR.out<-YPR_SPR_RPs(maxage=maxage,agestep=agestep,
                          Linf=LH.samps4LBSPR$Linf[i],
                          k=LH.samps4LBSPR$k[i],t0=0, 
                          Lmat50=LH.samps4LBSPR$L50[i],
@@ -168,7 +171,8 @@ LBSPR_stochastic<-function(
                          Sel95=Spp.LBSPR.fit@Vars[,2], 
                          M =LH.samps4LBSPR$M_k[i]*LH.samps4LBSPR$k[i], 
                          maxF = maxF, F_step = F_step) 
-    RPs_Fmax_SPR[[i]]<-YPR.out$Fmax_SPR
+      RPs_Fmax_SPR[[i]]<-YPR.out$Fmax_SPR      
+    }
   }
   
   #Process data for ggplot
@@ -193,10 +197,11 @@ LBSPR_stochastic<-function(
   LBSPRs.vals.out[[5]][is.na(LBSPRs.vals.out[[2]])]<-NA
   
   LBSPRs.vals.out[[9]]<-mapply(function(x) length(na.omit(LBSPRs.vals.out[[2]][,x])),x=1:ncol(LBSPRs.vals.out[[2]]))
-  LBSPRs.vals.out[[10]]<-do.call(rbind,RPs_Fmax_SPR)
-  LBSPRs.vals.out[[10]][LBSPRs.vals.out[[10]][,1]==maxF,1]<-NA
+  if(Calc.RPs == TRUE & !is.na(k)){LBSPRs.vals.out[[10]]<-do.call(rbind,RPs_Fmax_SPR)
+  LBSPRs.vals.out[[10]][LBSPRs.vals.out[[10]][,1]==maxF,1]<-NA}
   
-  names(LBSPRs.vals.out)<-c("LH_inputs","SPR","Sel50","Sel95","F","Sel50_Var","Sel95_Var","F_Var","Kept samples","Fmax_SPR_MSY_RPs")
+  if(Calc.RPs == TRUE & !is.na(k)){names(LBSPRs.vals.out)<-c("LH_inputs","SPR","Sel50","Sel95","F","Sel50_Var","Sel95_Var","F_Var","Kept samples","Fmax_SPR_MSY_RPs")}
+  else names(LBSPRs.vals.out)<-c("LH_inputs","SPR","Sel50","Sel95","F","Sel50_Var","Sel95_Var","F_Var","Kept samples")
   return(LBSPRs.vals.out)
 }
 
