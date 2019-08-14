@@ -42,9 +42,6 @@ LBSPR_stochastic<-function(
   F_step = 0.01     #F step to search for YPR
   )
 {
-  #Set-up initial pars file
-  Spp_pars.samp<-new("LB_pars")
-  Spp_pars.samp@L_units <- "cm" 
   #Set-up output onjects, SPR and variances
   LBSPR.out_SPR<-LBSPR.out_vars<-LBSPR.out_Sel50<-LBSPR.out_Sel95<-LBSPR.out_F<-LBSPR.out_Sel50_vars<-LBSPR.out_Sel95_vars<-LBSPR.out_F_vars<-list()
   RPs_Fmax_SPR<-list() #Reference points list
@@ -135,6 +132,10 @@ LBSPR_stochastic<-function(
   for(i in 1:Nsamp)
   {
     print(paste0("Sample ",i))
+    #Set-up initial pars file
+    Spp_pars.samp<-new("LB_pars")
+    Spp_pars.samp@L_units <- "cm" 
+
     Spp_pars.samp@Linf <- LH.samps4LBSPR$Linf[i]
     Spp_pars.samp@MK <- LH.samps4LBSPR$M_k[i] 
     Spp_pars.samp@L50 <- LH.samps4LBSPR$L50[i] 
