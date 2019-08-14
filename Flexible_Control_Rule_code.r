@@ -9,26 +9,37 @@
     shape.dl=c(seq(0.1,0.3,0.05),rep(0,5),rep(0.05,5)),
     CRname=c(c(paste("linear",1:5)),c(paste("cubic",1:5)),c(paste("cubicpoly",1:5))))
   {
-    if(SPR/SPR_targ>=1)
+  Vt.out<-list()
+  if(length(SPR)>length(SPR_targ)){SPR_targ<-rep(SPR_targ,length(SPR))}
+  for(i in 1:length(SPR))
+  {
+    if(is.na(SPR[i]/SPR_targ[i]))
     {
-      Vt<-shape.up*((SPR/SPR_targ)-1)^3+slope.up*((SPR/SPR_targ)-1)
-      Vt.out<-data.frame(1+Vt,CRname)
-      colnames(Vt.out)<-c("E_buffer","CR_name")
+      Vt.out[[i]]<-data.frame(matrix(NA,length(slope.up),2))
+      colnames(Vt.out[[i]])<-c("Modifier","CR_name")
     }
-    
-    if(SPR/SPR_targ<1)
+    if(!is.na(SPR[i]/SPR_targ[i]))
     {
-      Vt<-shape.dl*((SPR/SPR_targ)-1)^3+slope.dl*((SPR/SPR_targ)-1)
-      Vt.out<-data.frame(1+Vt,CRname)
-      colnames(Vt.out)<-c("E_buffer","CR_name")
+      if(SPR[i]/SPR_targ[i]>=1)
+      {
+        Vt<-1+(shape.up*((SPR[i]/SPR_targ[i])-1)^3+slope.up*((SPR[i]/SPR_targ[i])-1))
+        Vt.out[[i]]<-data.frame(Vt,CRname)
+        colnames(Vt.out[[i]])<-c("Modifier","CR_name")
+      }
+  
+      if(SPR[i]/SPR_targ[i]<1)
+      {
+        Vt<-1+(shape.dl*((SPR[i]/SPR_targ[i])-1)^3+slope.dl*((SPR[i]/SPR_targ[i])-1))
+        Vt.out[[i]]<-data.frame(Vt,CRname)
+        colnames(Vt.out[[i]])<-c("Modifier","CR_name")
+      }
     }
-    
     # if(SPR/SPR_targ>=1 & SPRt-SPRc>=0){D=0.2}
     # if(SPR/SPR_targ>=1 & SPRt-SPRc<0){D=0}
     # if(SPR/SPR_targ<1 & SPRt-SPRc>=0){D=0}
     # if(SPR/SPR_targ<1 & SPRt-SPRc<0){D=0.2}
     # Vt_jn<-1+[shape*((SPR/SPR_targ)-1)^3+slope*((SPR/SPR_targ)-1)]*[1+D]
-    
+  }
     return(Vt.out)
   }
   ###########################################
