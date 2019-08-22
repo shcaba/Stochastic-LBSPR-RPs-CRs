@@ -44,7 +44,7 @@ LBSPR_stochastic<-function(
 {
   #Set-up output onjects, SPR and variances
   LBSPR.out_SPR<-LBSPR.out_vars<-LBSPR.out_Sel50<-LBSPR.out_Sel95<-LBSPR.out_F<-LBSPR.out_Sel50_vars<-LBSPR.out_Sel95_vars<-LBSPR.out_F_vars<-list()
-  RPs_Fmax_SPR<-list() #Reference points list
+  RPs_Fmax<-RPs_SPR<-list() #Reference points list
   if(LH_in==1)
   {
     LH.in<-read.csv(LH.file)
@@ -162,18 +162,27 @@ LBSPR_stochastic<-function(
     LBSPR.out_Sel95_vars[[i]]<-Spp.LBSPR.fit@Vars[,2]
     LBSPR.out_F_vars[[i]]<-Spp.LBSPR.fit@Vars[,3]
     
+    #if(ncol(LBSPR.out_Sel50_vars[[i]])>1){Spp.LBSPR.fit@Vars[,1]}
+
     if(Calc.RPs == TRUE & !is.na(k))
     {
+      RPs_Fmax_temp<-RPs_SPR_temp<-list()
+      for(ii in 1:length(LBSPR.out_Sel50[[i]]))
+      {
       YPR.out<-YPR_SPR_RPs(maxage=maxage,agestep=agestep,
                          Linf=LH.samps4LBSPR$Linf[i],
                          k=LH.samps4LBSPR$k[i],t0=0, 
                          Lmat50=LH.samps4LBSPR$L50[i],
                          Lmat95=LH.samps4LBSPR$L50[i],
-                         Sel50=Spp.LBSPR.fit@Vars[,1], 
-                         Sel95=Spp.LBSPR.fit@Vars[,2], 
+                         Sel50=Spp.LBSPR.fit@Vars[ii,1], 
+                         Sel95=Spp.LBSPR.fit@Vars[ii,2], 
                          M =LH.samps4LBSPR$M_k[i]*LH.samps4LBSPR$k[i], 
                          maxF = maxF, F_step = F_step) 
-      RPs_Fmax_SPR[[i]]<-YPR.out$Fmax_SPR      
+      RPs_Fmax_temp[[ii]]<-YPR.out$Fmax_SPR[1]              
+      RPs_SPR_temp[[ii]]<-YPR.out$Fmax_SPR[2]              
+      }
+    RPs_Fmax[[i]]<-do.call(cbind,RPs_Fmax_temp)
+    RPs_SPR[[i]]<-do.call(cbind,RPs_SPR_temp)
     }
   }
   
@@ -199,10 +208,13 @@ LBSPR_stochastic<-function(
   LBSPRs.vals.out[[5]][is.na(LBSPRs.vals.out[[2]])]<-NA
   
   LBSPRs.vals.out[[9]]<-mapply(function(x) length(na.omit(LBSPRs.vals.out[[2]][,x])),x=1:ncol(LBSPRs.vals.out[[2]]))
-  if(Calc.RPs == TRUE & !is.na(k)){LBSPRs.vals.out[[10]]<-do.call(rbind,RPs_Fmax_SPR)
-  LBSPRs.vals.out[[10]][LBSPRs.vals.out[[10]][,1]==maxF,1]<-NA}
+  if(Calc.RPs == TRUE & !is.na(k))
+  {
+    LBSPRs.vals.out[[10]]<-do.call(rbind,RPs_Fmax)
+    LBSPRs.vals.out[[11]]<-do.call(rbind,RPs_SPR)
+    LBSPRs.vals.out[[10]][LBSPRs.vals.out[[10]][,1]==maxF,1]<-LBSPRs.vals.out[[11]][LBSPRs.vals.out[[10]][,1]==maxF,1]<-NA}
   
-  if(Calc.RPs == TRUE & !is.na(k)){names(LBSPRs.vals.out)<-c("LH_inputs","SPR","Sel50","Sel95","F","Sel50_Var","Sel95_Var","F_Var","Kept samples","Fmax_SPR_MSY_RPs")}
+  if(Calc.RPs == TRUE & !is.na(k)){names(LBSPRs.vals.out)<-c("LH_inputs","SPR","Sel50","Sel95","F","Sel50_Var","Sel95_Var","F_Var","Kept samples","Fmax_MSY_RPs","SPR_MSY_RPs")}
   else names(LBSPRs.vals.out)<-c("LH_inputs","SPR","Sel50","Sel95","F","Sel50_Var","Sel95_Var","F_Var","Kept samples")
   return(LBSPRs.vals.out)
 }
