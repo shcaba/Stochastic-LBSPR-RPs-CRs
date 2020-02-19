@@ -28,6 +28,19 @@
           return(SBPRF)
         }
         
+    F_weighted<-function(Linf,k,t0,M,Fmax,Sel50,Sel95,maxage,agestep)
+      {
+        R_in<-1000
+        ages<-seq(0,maxage,agestep)
+        Lts<-Linf*(1-exp(-k*(ages-t0)))
+        sel_vec<-1/(1+exp(-(Lts-Sel50)/((Sel95-Sel50)/log(19))))
+        numbers<-Numbers(R_in,M,F_yr=Fmax,Sel=sel_vec,ages,a_i=agestep)[,1]
+        stand.nums<-numbers[-1]/sum(numbers[-1])
+        F_Sel<-Fmax*sel_vec[-1]
+        F_wted<-sum(F_Sel*stand.nums)
+        return(F_wted)
+      }
+
     YPR_SPR_RPs<-function (maxage,agestep=1,
         Linf,k,t0, 
         LW_a=0.000001,LW_b=3, 
