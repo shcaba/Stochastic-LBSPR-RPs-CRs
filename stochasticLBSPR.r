@@ -183,7 +183,7 @@ LBSPR_stochastic<-function(
       RPs_SPR_temp[[ii]]<-YPR.out$Fmax_SPR[2]         
 
     #Calculate weighted F values
-    Fmax_wt_YPR_temp<-F_weighted(Linf=LH.samps4LBSPR$Linf[i],
+    Fmax_wt_YPR_temp[[ii]]<-F_weighted(Linf=LH.samps4LBSPR$Linf[i],
                                  k=LH.samps4LBSPR$k[i],
                                  t0=0, 
                                  M =LH.samps4LBSPR$M_k[i]*LH.samps4LBSPR$k[i],
@@ -192,7 +192,7 @@ LBSPR_stochastic<-function(
                                  Sel95=Spp.LBSPR.fit@Vars[ii,2], 
                                  maxage=maxage,
                                  agestep=agestep)
-    Fmax_wt_LBSPR_temp<-F_weighted(Linf=LH.samps4LBSPR$Linf[i],
+    Fmax_wt_LBSPR_temp[[ii]]<-F_weighted(Linf=LH.samps4LBSPR$Linf[i],
                                    k=LH.samps4LBSPR$k[i],
                                    t0=0, 
                                    M =LH.samps4LBSPR$M_k[i]*LH.samps4LBSPR$k[i],
@@ -204,8 +204,8 @@ LBSPR_stochastic<-function(
       }
     RPs_Fmax[[i]]<-do.call(cbind,RPs_Fmax_temp)
     RPs_SPR[[i]]<-do.call(cbind,RPs_SPR_temp)
-    F_wted_LBSPR[[i]]<-do.call(cbind,RPs_Fmax_temp)
-    F_wted_YPR[[i]]<-do.call(cbind,RPs_SPR_temp)
+    F_wted_LBSPR[[i]]<-do.call(cbind,Fmax_wt_LBSPR_temp)
+    F_wted_YPR[[i]]<-do.call(cbind,Fmax_wt_YPR_temp)
     }
   }
   
